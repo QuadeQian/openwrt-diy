@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 # 必需的环境变量列表
 REQUIRED_VARS=(
   "GIT_WORKSPACE"
@@ -35,7 +37,7 @@ check_env_vars() {
 
 # 使用SDK编译包
 build_packages() {
-    docker run --rm -it -u root\
+    docker run --rm -i -u root\
 	-e FEEDNAME=${FEED_NAME} \
 	-e FEED_DIR="/home/build/immortalwrt/custom-feeds" \
         -v "${GIT_WORKSPACE}/cache/bin:/home/build/immortalwrt/bin" \
@@ -54,7 +56,7 @@ build_image() {
 	    mkdir -p "${GIT_WORKSPACE}/docker_inside/files/etc/opkg"
 	    cp "${GIT_WORKSPACE}/board/$PROFILE/arch.conf" "${GIT_WORKSPACE}/docker_inside/files/etc/opkg/arch.conf"
     }
-    docker run --rm -it -u root\
+    docker run --rm -i -u root\
 	-e PROFILE=$PROFILE \
 	-e ROOTFS_PARTSIZE=$ROOTFS_PARTSIZE\
 	-e ROUTER_IP=$ROUTER_IP\
