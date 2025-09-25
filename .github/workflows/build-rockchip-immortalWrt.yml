@@ -1,0 +1,121 @@
+name: build-rockchip-immortalWrt
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: choice
+        description: |
+          输入 OWRT版本 可选值如下：
+        options:
+          - 22.04
+        required: true
+        default: '22.04'
+      profile:
+        type: choice
+        description: |
+          输入 软路由型号 可选值如下：
+        options:
+          - ariaboard_photonicat
+          - armsom_sige3
+          - armsom_sige7
+          - cyber_cyber3588-aib
+          - ezpro_mrkaio-m68s
+          - firefly_roc-rk3328-cc
+          - firefly_roc-rk3568-pc
+          - friendlyarm_nanopc-t4
+          - friendlyarm_nanopc-t6
+          - friendlyarm_nanopi-r2c
+          - friendlyarm_nanopi-r2c-plus
+          - friendlyarm_nanopi-r2s
+          - friendlyarm_nanopi-r3s
+          - friendlyarm_nanopi-r4s
+          - friendlyarm_nanopi-r4se
+          - friendlyarm_nanopi-r4s-enterprise
+          - friendlyarm_nanopi-r5c
+          - friendlyarm_nanopi-r5s
+          - friendlyarm_nanopi-r6c
+          - friendlyarm_nanopi-r6s
+          - huake_guangmiao-g4c
+          - lunzn_fastrhino-r66s
+          - lunzn_fastrhino-r68s
+          - lyt_t68m
+          - pine64_rock64
+          - pine64_rockpro64
+          - radxa_cm3_io
+          - radxa_e25
+          - radxa_rock-3a
+          - radxa_rock-3b
+          - radxa_rock-3c
+          - radxa_rock-5a
+          - radxa_rock-5b
+          - radxa_rock-pi-4a
+          - radxa_rock-pi-e
+          - radxa_rock-pi-s
+          - radxa_zero-3e
+          - radxa_zero-3w
+          - sinovoip_bpi-r2-pro
+          - xunlong_orangepi-5
+          - xunlong_orangepi-5-plus
+          - xunlong_orangepi-r1-plus
+          - xunlong_orangepi-r1-plus-lts
+        required: true
+        default: 'lunzn_fastrhino-r68s'
+      custom_router_ip:
+        description: "请设置软路由的管理地址(注意仅对多网口软路由有效) 格式:192.168.x.1 或 10.x.x.1"
+        required: true
+        default: "192.168.26.1"
+      rootfs_partsize:
+        description: '设置软件包大小 单位(MB)'
+        required: true
+        default: '1024'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Building Rockchip ImmortalWrt
+        env:
+          GIT_WORKSPACE: "${{ github.workspace }}"
+          ARCH_VER: "rockchip-armv8-openwrt-${{ github.event.inputs.version }}"
+          ROOTFS_PARTSIZE: "${{ github.event.inputs.rootfs_partsize }}"
+          ROUTER_IP: "${{ github.event.inputs.custom_router_ip }}"
+        run: |
+          profiles="${{ github.event.inputs.profile }}"
+          time_info=$(date -Iseconds)
+          
+          IFS=',' read -r -a profile_array <<< "$profiles"
+          
+          for profile in "${profile_array[@]}"; do
+            echo "Building for profile: $profile"
+            export PROFILE="$profile"
+            bash ${{ github.workspace }}/scripts/build.sh
+          done
+    
+      - name: Create info
+        run: |
+          cat > ${{ github.workspace }}/router-info.md <<EOF
+          ## 📡 路由器后台信息
+
+          - ✳️ **软路由型号**: ${{ github.event.inputs.profile }}
+          - 🏠 **后台地址**: ${{ github.event.inputs.custom_router_ip }}
+          - 👤 **用户名**: root
+          - 🔑 **密码**: 无
+          EOF
+
+      - name: Upload ImmortWrt as release assets
+        uses: softprops/action-gh-release@v2.2.1
+        with:
+          tag_name: OWRT
+          name: ImmortWrt-Rockchip_${{ time_info }}
+          body_path: ${{ github.workspace }}/router-info.md
+          files: |
+            ${{ github.workspace }}/cache/bin/targets/rockchip/armv8/*.img.gz
+          token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
