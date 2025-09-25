@@ -86,7 +86,7 @@ jobs:
           ROUTER_IP: "${{ github.event.inputs.custom_router_ip }}"
         run: |
           profiles="${{ github.event.inputs.profile }}"
-          time_info=$(date -Iseconds)
+          BUILD_TIME=$(date -Iseconds)
           
           IFS=',' read -r -a profile_array <<< "$profiles"
           
@@ -111,7 +111,7 @@ jobs:
         uses: softprops/action-gh-release@v2.2.1
         with:
           tag_name: OWRT
-          name: ImmortWrt-Rockchip_${{ time_info }}
+          name: ImmortWrt-Rockchip_${{ env.BUILD_TIME }}
           body_path: ${{ github.workspace }}/router-info.md
           files: |
             ${{ github.workspace }}/cache/bin/targets/rockchip/armv8/*.img.gz
