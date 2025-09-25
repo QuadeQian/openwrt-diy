@@ -8,7 +8,7 @@ on:
         description: |
           输入 OWRT版本 可选值如下：
         options:
-          - 24.10
+          - '24.10'
         required: true
         default: '24.10'
       profile:
