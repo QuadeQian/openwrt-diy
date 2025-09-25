@@ -4,6 +4,9 @@
 LOGFILE="/etc/config/uci-defaults-log.txt"
 echo "Starting 99-custom.sh at $(date)" >>$LOGFILE
 
+# 获取打包时传入的自定义配置
+source /etc/custom_vars.txt || true
+
 # 设置主机名映射，解决安卓原生 TV 无法联网的问题
 uci add dhcp domain
 uci set "dhcp.@domain[-1].name=time.android.com"
@@ -84,9 +87,7 @@ elif [ "$count" -gt 1 ]; then
     # 多网口设备 支持修改为别的管理后台地址 在Github Action 的UI上自行输入即可 
     uci set network.lan.netmask='255.255.255.0'
     # 设置路由器管理后台地址
-    IP_VALUE_FILE="/etc/config/custom_router_ip.txt"
-    if [ -f "$IP_VALUE_FILE" ]; then
-        CUSTOM_IP=$(cat "$IP_VALUE_FILE")
+    if [ -n "$CUSTOM_IP" ]; then
         # 用户在UI上设置的路由器后台管理地址
         uci set network.lan.ipaddr=$CUSTOM_IP
         echo "custom router ip is $CUSTOM_IP" >> $LOGFILE
