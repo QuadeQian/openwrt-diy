@@ -1,6 +1,8 @@
 name: build-rockchip-immortalWrt
 
 on:
+  schedule:
+    - cron: '0 3 23 * *'  # 每月23日UTC时间3:00（避开高峰时段）
   workflow_dispatch:
     inputs:
       version:
@@ -68,7 +70,7 @@ on:
       rootfs_partsize:
         description: '设置软件包大小 单位(MB)'
         required: true
-        default: '1024'
+        default: '2048'
 
 jobs:
   build:
@@ -76,7 +78,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Building Rockchip ImmortalWrt
         env:
@@ -108,7 +110,7 @@ jobs:
           EOF
 
       - name: Upload ImmortWrt as release assets
-        uses: softprops/action-gh-release@v2.2.1
+        uses: softprops/action-gh-release@v2.3.3
         with:
           tag_name: OWRT
           name: ImmortWrt-Rockchip_${{ env.BUILD_TIME }}
