@@ -28,15 +28,23 @@ function git_sparse_clone() {
 
 # 晶晨宝盒
 git_sparse_clone main https://github.com/ophub/luci-app-amlogic luci-app-amlogic
-# sed -i "s|firmware_repo.*|firmware_repo 'https://github.com/haiibo/OpenWrt'|g" ${FEED_DIR}/luci-app-amlogic/root/etc/config/amlogic
+sed -i "s|firmware_repo.*|firmware_repo 'https://github.com/QuadeQian/openwrt-diy'|g" ${FEED_DIR}/luci-app-amlogic/root/etc/config/amlogic
 # sed -i "s|kernel_path.*|kernel_path 'https://github.com/ophub/kernel'|g" ${FEED_DIR}/luci-app-amlogic/root/etc/config/amlogic
-# sed -i "s|ARMv8|ARMv8_PLUS|g" ${FEED_DIR}/luci-app-amlogic/root/etc/config/amlogic
+sed -i "s|ARMv8|OWRT|g" ${FEED_DIR}/luci-app-amlogic/root/etc/config/amlogic
 CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-app-amlogic"
 
 # iStore
 #git_sparse_clone main https://github.com/linkease/istore-ui app-store-ui 
 #git_sparse_clone main https://github.com/linkease/istore luci 
-#CUSTOM_PACKAGES="$CUSTOM_PACKAGES app-store-ui luci-app-store luci-lib-taskd luci-lib-xterm taskd"
+#CUSTOM_PACKAGES="$CUSTOM_PACKAGES app-store-ui taskd luci-lib-taskd luci-lib-xterm luci-app-store"
+
+# 测速插件
+git clone --depth=1 https://github.com/sirpdboy/luci-app-netspeedtest
+CUSTOM_PACKAGES="$CUSTOM_PACKAGES speedtest-cli homebox netspeedtest luci-app-netspeedtest"
+
+# turboacc
+git clone --depth=1 https://github.com/chenmozhijin/turboacc
+CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-app-turboacc"
 
 echo "CUSTOM_PACKAGES=\"$CUSTOM_PACKAGES\"" > ./envfile/custom-packages.env
 
