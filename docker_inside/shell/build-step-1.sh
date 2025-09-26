@@ -83,7 +83,7 @@ if [ -z "$CUSTOM_PACKAGES" ]; then
 else
 	# compile specific packages with checks
 	for PKG in $CUSTOM_PACKAGES; do
-		test check_build "$PKG" || continue
+		check_build "$PKG" || continue
 		for FEED in $ALL_CUSTOM_FEEDS; do
 			group "feeds install -p $FEED -f $PKG"
 			./scripts/feeds install -p "$FEED" -f "$PKG"
@@ -160,7 +160,7 @@ else
 	RET=0
 
 	for PKG in $CUSTOM_PACKAGES; do
-	    test check_build "$PKG" || continue
+	    check_build "$PKG" || continue
 		make \
 			BUILD_LOG="$BUILD_LOG" \
 			IGNORE_ERRORS="$IGNORE_ERRORS" \
