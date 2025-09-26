@@ -52,14 +52,17 @@ build_packages() {
 
 # 构建最终镜像
 build_image() {
+    rm "${GIT_WORKSPACE}/docker_inside/files/etc/opkg/arch.conf" || true
+	rm "${GIT_WORKSPACE}/docker_inside/files/etc/custom_vars.txt" || true
     test -e "${GIT_WORKSPACE}/board/$PROFILE/arch.conf" && {
 	    mkdir -p "${GIT_WORKSPACE}/docker_inside/files/etc/opkg"
 	    cp "${GIT_WORKSPACE}/board/$PROFILE/arch.conf" "${GIT_WORKSPACE}/docker_inside/files/etc/opkg/arch.conf"
     }
+	mkdir -p "${GIT_WORKSPACE}/docker_inside/files/etc"
+	echo "CUSTOM_IP=${ROUTER_IP}" >> ${GIT_WORKSPACE}/docker_inside/files/etc/custom_vars.txt
     docker run --rm -i -u root\
 	-e PROFILE=$PROFILE \
 	-e ROOTFS_PARTSIZE=$ROOTFS_PARTSIZE\
-	-e ROUTER_IP=$ROUTER_IP\
         -v "${GIT_WORKSPACE}/cache/bin:/home/build/immortalwrt/bin" \
         -v "${GIT_WORKSPACE}/docker_inside/shell:/home/build/immortalwrt/shell" \
         -v "${GIT_WORKSPACE}/cache/extra-packages:/home/build/immortalwrt/packages" \
@@ -67,7 +70,6 @@ build_image() {
         -v "${GIT_WORKSPACE}/cache/envfile:/home/build/immortalwrt/envfile" \
         immortalwrt/imagebuilder:${ARCH_VER} \
 	/bin/bash shell/build-step-2.sh
-    rm "${GIT_WORKSPACE}/docker_inside/files/etc/opkg/arch.conf" || true
 }
 
 # 主执行流程
