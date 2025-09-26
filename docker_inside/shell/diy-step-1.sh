@@ -39,11 +39,11 @@ CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-app-amlogic"
 #CUSTOM_PACKAGES="$CUSTOM_PACKAGES app-store-ui taskd luci-lib-taskd luci-lib-xterm luci-app-store"
 
 # 测速插件
-git clone --depth=1 https://github.com/sirpdboy/luci-app-netspeedtest
-CUSTOM_PACKAGES="$CUSTOM_PACKAGES speedtest-cli homebox netspeedtest luci-app-netspeedtest"
+git_sparse_clone lua https://github.com/sirpdboy/luci-app-netspeedtest homebox luci-app-netspeedtest
+CUSTOM_PACKAGES="$CUSTOM_PACKAGES homebox luci-app-netspeedtest"
 
 # turboacc
-git clone --depth=1 https://github.com/chenmozhijin/turboacc
+git_sparse_clone luci https://github.com/chenmozhijin/turboacc luci-app-turboacc
 CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-app-turboacc"
 
 echo "CUSTOM_PACKAGES=\"$CUSTOM_PACKAGES\"" > ./envfile/custom-packages.env
