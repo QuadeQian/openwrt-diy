@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+set -e
 
 # 必需的环境变量列表
 REQUIRED_VARS=(
