@@ -2,7 +2,7 @@ name: build-rockchip-immortalWrt
 
 on:
   schedule:
-    - cron: '0 3 23 * *'  # 每月23日UTC时间3:00（避开高峰时段）
+    - cron: '0 3 23 * *'  # 每月23日UTC时间3:00
   workflow_dispatch:
     inputs:
       version:
@@ -72,6 +72,11 @@ on:
         required: true
         default: '2048'
 
+env:
+  PLATFORM: rockchip
+  ARCH: armv8
+  TZ: Asia/Shanghai
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -80,15 +85,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Building Rockchip ImmortalWrt
+      - name: Building ${{ env.PLATFORM }} ImmortalWrt
         env:
           GIT_WORKSPACE: "${{ github.workspace }}"
-          ARCH_VER: "rockchip-armv8-openwrt-${{ github.event.inputs.version }}"
+          ARCH_VER: "${{ env.PLATFORM }}-${{ env.ARCH }}-openwrt-${{ github.event.inputs.version }}"
           ROOTFS_PARTSIZE: "${{ github.event.inputs.rootfs_partsize }}"
           ROUTER_IP: "${{ github.event.inputs.custom_router_ip }}"
         run: |
           profiles="${{ github.event.inputs.profile }}"
           BUILD_TIME=$(date -Iseconds)
+          echo "BUILD_TIME=$BUILD_TIME" >> $GITHUB_ENV
           
           IFS=',' read -r -a profile_array <<< "$profiles"
           
@@ -97,6 +103,9 @@ jobs:
             export PROFILE="$profile"
             bash ${{ github.workspace }}/scripts/build.sh || exit 1
           done
+          mkdir -p ${{ github.workspace }}/upload
+          cp ${{ github.workspace }}/cache/bin/targets/${{ env.PLATFORM }}/${{ env.ARCH }}/*.img.gz ${{ github.workspace }}/upload
+          echo "FIRMWARE_FILES=${{ github.workspace }}/upload/*" >> $GITHUB_ENV
     
       - name: Create info
         run: |
@@ -113,10 +122,9 @@ jobs:
         uses: softprops/action-gh-release@v2.3.3
         with:
           tag_name: OWRT
-          name: ImmortWrt-Rockchip_${{ env.BUILD_TIME }}
+          name: ImmortWrt-${{ env.PLATFORM }}_${{ env.BUILD_TIME }}
           body_path: ${{ github.workspace }}/router-info.md
-          files: |
-            ${{ github.workspace }}/cache/bin/targets/rockchip/armv8/*.img.gz
+          files: ${{ env.FIRMWARE_FILES }}
           token: ${{ secrets.GITHUB_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
