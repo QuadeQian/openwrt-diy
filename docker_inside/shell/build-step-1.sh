@@ -29,6 +29,16 @@ chmod a+x shell/diy-step-1.sh
 
 FEEDNAME="${FEEDNAME:-action}"
 BUILD_LOG="${BUILD_LOG:-1}"
+SKIP_PREFIX="- luci-i18n-"
+
+check_build() {
+    for SKIP_ONE in $SKIP_PREFIX; do
+		if [[ "$1" == "$SKIP_ONE"* ]]; then
+			return 1
+		fi
+	done
+	return 0
+}
 
 if [ -z "$NO_DEFAULT_FEEDS" ]; then
 	cat feeds.conf.default >> feeds.conf
@@ -73,6 +83,7 @@ if [ -z "$CUSTOM_PACKAGES" ]; then
 else
 	# compile specific packages with checks
 	for PKG in $CUSTOM_PACKAGES; do
+		test check_build "$PKG" || continue
 		for FEED in $ALL_CUSTOM_FEEDS; do
 			group "feeds install -p $FEED -f $PKG"
 			./scripts/feeds install -p "$FEED" -f "$PKG"
@@ -149,6 +160,7 @@ else
 	RET=0
 
 	for PKG in $CUSTOM_PACKAGES; do
+	    test check_build "$PKG" || continue
 		make \
 			BUILD_LOG="$BUILD_LOG" \
 			IGNORE_ERRORS="$IGNORE_ERRORS" \
