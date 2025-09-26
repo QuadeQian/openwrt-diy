@@ -95,7 +95,7 @@ jobs:
           for profile in "${profile_array[@]}"; do
             echo "Building for profile: $profile"
             export PROFILE="$profile"
-            bash ${{ github.workspace }}/scripts/build.sh
+            bash ${{ github.workspace }}/scripts/build.sh || exit 1
           done
     
       - name: Create info
