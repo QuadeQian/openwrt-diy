@@ -38,15 +38,16 @@ check_env_vars() {
 # 使用SDK编译包
 build_packages() {
     docker run --rm -i -u root\
+	-e V=s \
 	-e FEEDNAME=${FEED_NAME} \
 	-e FEED_DIR="/home/build/immortalwrt/custom-feeds" \
-        -v "${GIT_WORKSPACE}/cache/bin:/home/build/immortalwrt/bin" \
-        -v "${GIT_WORKSPACE}/cache/extra-packages:/home/build/immortalwrt/extra-packages" \
-        -v "${GIT_WORKSPACE}/cache/feeds:/home/build/immortalwrt/feeds" \
-        -v "${GIT_WORKSPACE}/docker_inside/shell:/home/build/immortalwrt/shell" \
-        -v "${GIT_WORKSPACE}/cache/envfile:/home/build/immortalwrt/envfile" \
-        -v "${GIT_WORKSPACE}/cache/custom-feeds:/home/build/immortalwrt/custom-feeds" \
-        immortalwrt/sdk:${ARCH_VER} \
+	-v "${GIT_WORKSPACE}/cache/bin:/home/build/immortalwrt/bin" \
+	-v "${GIT_WORKSPACE}/cache/extra-packages:/home/build/immortalwrt/extra-packages" \
+	-v "${GIT_WORKSPACE}/cache/feeds:/home/build/immortalwrt/feeds" \
+	-v "${GIT_WORKSPACE}/docker_inside/shell:/home/build/immortalwrt/shell" \
+	-v "${GIT_WORKSPACE}/cache/envfile:/home/build/immortalwrt/envfile" \
+	-v "${GIT_WORKSPACE}/cache/custom-feeds:/home/build/immortalwrt/custom-feeds" \
+	immortalwrt/sdk:${ARCH_VER} \
 	/bin/bash shell/build-step-1.sh
 }
 
@@ -63,12 +64,12 @@ build_image() {
     docker run --rm -i -u root\
 	-e PROFILE=$PROFILE \
 	-e ROOTFS_PARTSIZE=$ROOTFS_PARTSIZE\
-        -v "${GIT_WORKSPACE}/cache/bin:/home/build/immortalwrt/bin" \
-        -v "${GIT_WORKSPACE}/docker_inside/shell:/home/build/immortalwrt/shell" \
-        -v "${GIT_WORKSPACE}/cache/extra-packages:/home/build/immortalwrt/packages" \
-        -v "${GIT_WORKSPACE}/docker_inside/files:/home/build/immortalwrt/files" \
-        -v "${GIT_WORKSPACE}/cache/envfile:/home/build/immortalwrt/envfile" \
-        immortalwrt/imagebuilder:${ARCH_VER} \
+	-v "${GIT_WORKSPACE}/cache/bin:/home/build/immortalwrt/bin" \
+	-v "${GIT_WORKSPACE}/docker_inside/shell:/home/build/immortalwrt/shell" \
+	-v "${GIT_WORKSPACE}/cache/extra-packages:/home/build/immortalwrt/packages" \
+	-v "${GIT_WORKSPACE}/docker_inside/files:/home/build/immortalwrt/files" \
+	-v "${GIT_WORKSPACE}/cache/envfile:/home/build/immortalwrt/envfile" \
+	immortalwrt/imagebuilder:${ARCH_VER} \
 	/bin/bash shell/build-step-2.sh
 }
 
