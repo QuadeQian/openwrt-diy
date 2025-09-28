@@ -5,7 +5,9 @@ set -e
 # 必需的环境变量列表
 REQUIRED_VARS=(
   "GIT_WORKSPACE"
-  "ARCH_VER"
+  "TARGET_ARCH"
+  "TARGET_PLATFORM"
+  "OWRT_VERSION"
   "PROFILE" 
   "ROOTFS_PARTSIZE"
   "ROUTER_IP"
@@ -35,6 +37,11 @@ check_env_vars() {
   fi
 }
 
+init_env() {
+	ln -sf platform/${TARGET_PLATFORM}/${PROFILE}/diy-step-1.sh ${GIT_WORKSPACE}/docker_inside/shell/diy-step-1.sh
+	ln -sf platform/${TARGET_PLATFORM}/${PROFILE}/diy-step-2.sh ${GIT_WORKSPACE}/docker_inside/shell/diy-step-2.sh
+}
+
 # 使用SDK编译包
 build_packages() {
     docker run --rm -i -u root\
@@ -47,7 +54,7 @@ build_packages() {
 	-v "${GIT_WORKSPACE}/docker_inside/shell:/home/build/immortalwrt/shell" \
 	-v "${GIT_WORKSPACE}/cache/envfile:/home/build/immortalwrt/envfile" \
 	-v "${GIT_WORKSPACE}/cache/custom-feeds:/home/build/immortalwrt/custom-feeds" \
-	immortalwrt/sdk:${ARCH_VER} \
+	immortalwrt/sdk:${TARGET_PLATFORM}-${TARGET_ARCH}-openwrt-${OWRT_VERSION} \
 	/bin/bash shell/build-step-1.sh
 }
 
@@ -69,7 +76,7 @@ build_image() {
 	-v "${GIT_WORKSPACE}/cache/extra-packages:/home/build/immortalwrt/packages" \
 	-v "${GIT_WORKSPACE}/docker_inside/files:/home/build/immortalwrt/files" \
 	-v "${GIT_WORKSPACE}/cache/envfile:/home/build/immortalwrt/envfile" \
-	immortalwrt/imagebuilder:${ARCH_VER} \
+	immortalwrt/imagebuilder:${TARGET_PLATFORM}-${TARGET_ARCH}-openwrt-${OWRT_VERSION} \
 	/bin/bash shell/build-step-2.sh
 }
 
