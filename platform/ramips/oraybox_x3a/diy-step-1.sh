@@ -35,8 +35,8 @@ function git_sparse_clone() {
 # CUSTOM_PACKAGES="$CUSTOM_PACKAGES homebox luci-app-netspeedtest luci-i18n-netspeedtest-zh-cn"
 
 # turboacc
-git_sparse_clone luci https://github.com/chenmozhijin/turboacc luci-app-turboacc
-CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-app-turboacc luci-i18n-turboacc-zh-cn"
+# git_sparse_clone luci https://github.com/chenmozhijin/turboacc luci-app-turboacc
+# CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-app-turboacc luci-i18n-turboacc-zh-cn"
 
 # easytier
 git_sparse_clone main https://github.com/EasyTier/luci-app-easytier easytier luci-app-easytier
