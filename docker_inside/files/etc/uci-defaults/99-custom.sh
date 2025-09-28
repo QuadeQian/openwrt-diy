@@ -12,6 +12,15 @@ uci add dhcp domain
 uci set "dhcp.@domain[-1].name=time.android.com"
 uci set "dhcp.@domain[-1].ip=203.107.6.88"
 
+# 设置子网掩码 
+uci set network.lan.netmask='255.255.255.0'
+# 设置路由器管理后台地址
+if [ -n "$CUSTOM_IP" ]; then
+    # 设置路由器的管理后台地址
+    uci set network.lan.ipaddr=$CUSTOM_IP
+    echo "custom router ip is $CUSTOM_IP" >> $LOGFILE
+fi
+
 # 若安装了dockerd 则设置docker的防火墙规则
 # 扩大docker涵盖的子网范围 '172.16.0.0/12'
 # 方便各类docker容器的端口顺利通过防火墙 
