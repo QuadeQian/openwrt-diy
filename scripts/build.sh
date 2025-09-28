@@ -38,11 +38,9 @@ check_env_vars() {
 }
 
 init_env() {
-	ln -sf ${GIT_WORKSPACE}/platform/${TARGET_PLATFORM}/${PROFILE}/diy-step-1.sh docker_inside/shell/ || {
+	cp -rf platform/${TARGET_PLATFORM}/${PROFILE}/diy-step-*.sh docker_inside/shell/ || {
 		echo "请在 platform/${TARGET_PLATFORM}/${PROFILE} 放入diy脚本"
-	}
-	ln -sf ${GIT_WORKSPACE}/platform/${TARGET_PLATFORM}/${PROFILE}/diy-step-2.sh docker_inside/shell/ || {
-		echo "请在 platform/${TARGET_PLATFORM}/${PROFILE} 放入diy脚本"
+		return 1
 	}
 }
 
