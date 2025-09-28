@@ -15,7 +15,7 @@ REQUIRED_VARS=(
 
 # 设置默认值
 : ${ROUTER_IP:='192.168.26.1'}
-: ${ROOTFS_PARTSIZE:=1024}
+: ${ROOTFS_PARTSIZE:='0'}
 : ${FEED_NAME:='third_part'}
 
 # 检查函数
