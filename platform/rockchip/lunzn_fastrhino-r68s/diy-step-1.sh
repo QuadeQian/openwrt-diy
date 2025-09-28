@@ -11,13 +11,10 @@ mkdir -p ${FEED_DIR}
 # Git稀疏克隆，只克隆指定目录到本地
 function git_sparse_clone() {
   branch="$1" repourl="$2" && shift 2
-  destdir=$(basename "$repourl" .git)
-  test "$destdir" == "$@" && destdir="${FEED_DIR}" || destdir="${FEED_DIR}/$destdir"
-  test -d $destdir || mkdir -p $destdir
   git clone --depth=1 -b $branch --single-branch --filter=blob:none --sparse $repourl
   repodir=$(echo $repourl | awk -F '/' '{print $(NF)}')
   cd $repodir && git sparse-checkout set $@
-  mv -f $@ $destdir
+  mv -f $@ ${FEED_DIR}/
   cd .. && rm -rf $repodir
 }
 
