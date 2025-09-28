@@ -86,6 +86,7 @@ build_image() {
 
 # 主执行流程
 check_env_vars
+init_env
 cd ${GIT_WORKSPACE}
 build_packages
 build_image
