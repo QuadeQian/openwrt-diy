@@ -70,6 +70,9 @@ else
     echo "未检测到 Docker，跳过防火墙配置。"
 fi
 
+#提交更改
+uci commit
+
 # 设置编译作者信息
 FILE_PATH="/etc/openwrt_release"
 NEW_DESCRIPTION="Packaged by Quade Qian"
