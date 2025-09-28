@@ -118,7 +118,7 @@ jobs:
       - name: Upload ImmortWrt as release assets
         uses: softprops/action-gh-release@v2.3.3
         with:
-          tag_name: OWRT
+          tag_name: OWRT-${{ github.event.inputs.profile }}
           name: ImmortWrt-${{ github.event.inputs.profile }}_${{ env.BUILD_TIME }}
           body_path: ${{ github.workspace }}/router-info.md
           files: ${{ env.FIRMWARE_FILES }}
