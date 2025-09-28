@@ -38,10 +38,10 @@ check_env_vars() {
 }
 
 init_env() {
-	ln -sf platform/${TARGET_PLATFORM}/${PROFILE}/diy-step-1.sh ${GIT_WORKSPACE}/docker_inside/shell/diy-step-1.sh || {
+	ln -sf ${GIT_WORKSPACE}/platform/${TARGET_PLATFORM}/${PROFILE}/diy-step-1.sh docker_inside/shell/ || {
 		echo "请在 platform/${TARGET_PLATFORM}/${PROFILE} 放入diy脚本"
 	}
-	ln -sf platform/${TARGET_PLATFORM}/${PROFILE}/diy-step-2.sh ${GIT_WORKSPACE}/docker_inside/shell/diy-step-2.sh || {
+	ln -sf ${GIT_WORKSPACE}/platform/${TARGET_PLATFORM}/${PROFILE}/diy-step-2.sh docker_inside/shell/ || {
 		echo "请在 platform/${TARGET_PLATFORM}/${PROFILE} 放入diy脚本"
 	}
 }
@@ -86,8 +86,8 @@ build_image() {
 
 # 主执行流程
 check_env_vars
-init_env
 cd ${GIT_WORKSPACE}
+init_env
 build_packages
 build_image
 echo "构建完成！输出镜像在: ${GIT_WORKSPACE}/docker/bin"
