@@ -11,5 +11,4 @@ PACKAGES="$PACKAGES luci-i18n-firewall-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-ttyd-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-homeproxy-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-mwan3-zh-cn"
-PACKAGES="$PACKAGES luci-i18n-zerotier-zh-cn"
 echo "PACKAGES=\"$PACKAGES\"" >> ./envfile/custom-packages.env
