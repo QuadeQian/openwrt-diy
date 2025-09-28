@@ -80,6 +80,7 @@ env:
   OWRT_VERSION: "${{ github.event.inputs.version }}"
   ROOTFS_PARTSIZE: "${{ github.event.inputs.rootfs_partsize }}"
   ROUTER_IP: "${{ github.event.inputs.custom_router_ip }}"
+  FIRMWARE_FILES: "${{ github.workspace }}/output/*"
 
 jobs:
   build:
@@ -102,9 +103,6 @@ jobs:
             export PROFILE="$profile"
             bash ${{ github.workspace }}/scripts/build.sh || exit 1
           done
-          mkdir -p ${{ github.workspace }}/upload
-          cp ${{ github.workspace }}/cache/bin/targets/${{ env.TARGET_PLATFORM }}/${{ env.TARGET_ARCH }}/*.img.gz ${{ github.workspace }}/upload
-          echo "FIRMWARE_FILES=${{ github.workspace }}/upload/*" >> $GITHUB_ENV
     
       - name: Create info
         run: |
