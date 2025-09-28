@@ -291,8 +291,8 @@ on:
         default: "192.168.26.1"
       rootfs_partsize:
         description: '设置软件包大小 单位(MB)'
-        required: true
-        default: '64'
+        required: false
+        default: '0'
 
 env:
   TARGET_PLATFORM: ramips
