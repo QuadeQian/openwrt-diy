@@ -38,6 +38,7 @@ check_env_vars() {
 }
 
 init_env() {
+	mkdir -p output
 	cp -rf platform/${TARGET_PLATFORM}/${PROFILE}/diy-step-*.sh docker_inside/shell/ || {
 		echo "请在 platform/${TARGET_PLATFORM}/${PROFILE} 放入diy脚本"
 		return 1
@@ -58,6 +59,7 @@ build_packages() {
 	-v "${GIT_WORKSPACE}/cache/custom-feeds:/home/build/immortalwrt/custom-feeds" \
 	immortalwrt/sdk:${TARGET_PLATFORM}-${TARGET_ARCH}-openwrt-${OWRT_VERSION} \
 	/bin/bash shell/build-step-1.sh
+	cp -rf cache/extra-packages/* output/
 }
 
 # 构建最终镜像
@@ -80,6 +82,7 @@ build_image() {
 	-v "${GIT_WORKSPACE}/cache/envfile:/home/build/immortalwrt/envfile" \
 	immortalwrt/imagebuilder:${TARGET_PLATFORM}-${TARGET_ARCH}-openwrt-${OWRT_VERSION} \
 	/bin/bash shell/build-step-2.sh
+	cp -rf cache/bin/targets/${TARGET_PLATFORM}/${TARGET_ARCH}/* output/
 }
 
 # 主执行流程
