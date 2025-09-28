@@ -22,7 +22,7 @@ function git_sparse_clone() {
 git_sparse_clone main https://github.com/ophub/luci-app-amlogic luci-app-amlogic
 sed -i "s|firmware_repo.*|firmware_repo 'https://github.com/QuadeQian/openwrt-diy'|g" ${FEED_DIR}/luci-app-amlogic/root/etc/config/amlogic
 # sed -i "s|kernel_path.*|kernel_path 'https://github.com/ophub/kernel'|g" ${FEED_DIR}/luci-app-amlogic/root/etc/config/amlogic
-sed -i "s|ARMv8|OWRT|g" ${FEED_DIR}/luci-app-amlogic/root/etc/config/amlogic
+sed -i "s|ARMv8|OWRT-$PROFILE|g" ${FEED_DIR}/luci-app-amlogic/root/etc/config/amlogic
 CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-app-amlogic luci-i18n-amlogic-zh-cn"
 
 # iStore
