@@ -38,8 +38,12 @@ check_env_vars() {
 }
 
 init_env() {
-	ln -sf platform/${TARGET_PLATFORM}/${PROFILE}/diy-step-1.sh ${GIT_WORKSPACE}/docker_inside/shell/diy-step-1.sh
-	ln -sf platform/${TARGET_PLATFORM}/${PROFILE}/diy-step-2.sh ${GIT_WORKSPACE}/docker_inside/shell/diy-step-2.sh
+	ln -sf platform/${TARGET_PLATFORM}/${PROFILE}/diy-step-1.sh ${GIT_WORKSPACE}/docker_inside/shell/diy-step-1.sh || {
+		echo "请在 platform/${TARGET_PLATFORM}/${PROFILE} 放入diy脚本"
+	}
+	ln -sf platform/${TARGET_PLATFORM}/${PROFILE}/diy-step-2.sh ${GIT_WORKSPACE}/docker_inside/shell/diy-step-2.sh || {
+		echo "请在 platform/${TARGET_PLATFORM}/${PROFILE} 放入diy脚本"
+	}
 }
 
 # 使用SDK编译包
