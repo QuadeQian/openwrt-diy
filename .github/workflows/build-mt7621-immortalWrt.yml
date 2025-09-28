@@ -341,7 +341,7 @@ jobs:
         uses: softprops/action-gh-release@v2.3.3
         with:
           tag_name: OWRT
-          name: ImmortWrt-${{ env.TARGET_PLATFORM }}_${{ env.BUILD_TIME }}
+          name: ImmortWrt-${{ github.event.inputs.profile }}_${{ env.BUILD_TIME }}
           body_path: ${{ github.workspace }}/router-info.md
           files: ${{ env.FIRMWARE_FILES }}
           token: ${{ secrets.GITHUB_TOKEN }}
