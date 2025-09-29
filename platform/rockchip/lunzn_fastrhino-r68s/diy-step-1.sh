@@ -42,8 +42,4 @@ CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-app-turboacc luci-i18n-turboacc-zh-cn"
 git_sparse_clone main https://github.com/EasyTier/luci-app-easytier easytier luci-app-easytier
 CUSTOM_PACKAGES="$CUSTOM_PACKAGES easytier luci-app-easytier luci-i18n-easytier-zh-cn"
 
-# easytier
-git_sparse_clone main https://github.com/OrayOS/OpenOray pgyvpn luci-app-pgyvpn
-CUSTOM_PACKAGES="$CUSTOM_PACKAGES pgyvpn luci-app-pgyvpn"
-
 echo "CUSTOM_PACKAGES=\"$CUSTOM_PACKAGES\"" > ./envfile/custom-packages.env
