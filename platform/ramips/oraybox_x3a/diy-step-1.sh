@@ -18,8 +18,10 @@ function git_sparse_clone() {
   cd .. && rm -rf $repodir
 }
 
-# turboacc
-git_sparse_clone luci https://github.com/chenmozhijin/turboacc luci-app-turboacc
-CUSTOM_PACKAGES="$CUSTOM_PACKAGES luci-app-turboacc luci-i18n-turboacc-zh-cn"
+# easytier
+git_sparse_clone main https://github.com/EasyTier/luci-app-easytier easytier luci-app-easytier
+# 删除easytier-web程序，缩减包size
+sed -i '/easytier-web/d' ${FEED_DIR}/easytier/Makefile
+CUSTOM_PACKAGES="$CUSTOM_PACKAGES easytier luci-app-easytier luci-i18n-easytier-zh-cn"
 
 echo "CUSTOM_PACKAGES=\"$CUSTOM_PACKAGES\"" > ./envfile/custom-packages.env
