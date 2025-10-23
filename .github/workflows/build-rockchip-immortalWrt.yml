@@ -77,9 +77,9 @@ env:
   TARGET_ARCH: armv8
   TZ: Asia/Shanghai
   GIT_WORKSPACE: "${{ github.workspace }}"
-  OWRT_VERSION: "${{ github.event.inputs.version }}"
-  ROOTFS_PARTSIZE: "${{ github.event.inputs.rootfs_partsize }}"
-  ROUTER_IP: "${{ github.event.inputs.custom_router_ip }}"
+  OWRT_VERSION_SCHED: "24.10"
+  ROOTFS_PARTSIZE_SCHED: "2048"
+  ROUTER_IP_SCHED: "192.168.26.1"
   FIRMWARE_FILES: "${{ github.workspace }}/output/*"
 
 jobs:
@@ -89,6 +89,20 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+
+      - name: Setup parameters
+        id: params
+        run: |
+          # 如果是定时触发，使用环境变量中的默认值，否则使用输入值
+          if [ "${{ github.event_name }}" == "schedule" ]; then
+            echo "OWRT_VERSION=${{ env.OWRT_VERSION_SCHED }}" >> $GITHUB_ENV
+            echo "ROOTFS_PARTSIZE=${{ env.ROOTFS_PARTSIZE_SCHED }}" >> $GITHUB_ENV
+            echo "ROUTER_IP=${{ env.ROUTER_IP_SCHED }}" >> $GITHUB_ENV
+          else
+            echo "OWRT_VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+            echo "ROOTFS_PARTSIZE=${{ github.event.inputs.rootfs_partsize }}" >> $GITHUB_ENV
+            echo "ROUTER_IP=${{ github.event.inputs.custom_router_ip }}" >> $GITHUB_ENV
+          fi
 
       - name: Building ${{ env.TARGET_PLATFORM }} ImmortalWrt
         run: |
