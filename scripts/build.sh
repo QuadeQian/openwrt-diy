@@ -43,6 +43,14 @@ init_env() {
 		echo "请在 platform/${TARGET_PLATFORM}/${PROFILE} 放入diy脚本"
 		return 1
 	}
+	rm "docker_inside/files/etc/opkg/arch.conf" || true
+    test -f "platform/${TARGET_PLATFORM}/${PROFILE}/arch.conf" && {
+	    mkdir -p "docker_inside/files/etc/opkg"
+	    cp -rf "platform/${TARGET_PLATFORM}/${PROFILE}/arch.conf" "docker_inside/files/etc/opkg/arch.conf"
+    }
+	rm "docker_inside/files/etc/custom_vars.txt" || true
+	mkdir -p "docker_inside/files/etc"
+	echo "CUSTOM_IP=${ROUTER_IP}" >> docker_inside/files/etc/custom_vars.txt
 }
 
 # 使用SDK编译包
@@ -64,14 +72,6 @@ build_packages() {
 
 # 构建最终镜像
 build_image() {
-    rm "${GIT_WORKSPACE}/docker_inside/files/etc/opkg/arch.conf" || true
-	rm "${GIT_WORKSPACE}/docker_inside/files/etc/custom_vars.txt" || true
-    test -e "${GIT_WORKSPACE}/board/$PROFILE/arch.conf" && {
-	    mkdir -p "${GIT_WORKSPACE}/docker_inside/files/etc/opkg"
-	    cp "${GIT_WORKSPACE}/board/$PROFILE/arch.conf" "${GIT_WORKSPACE}/docker_inside/files/etc/opkg/arch.conf"
-    }
-	mkdir -p "${GIT_WORKSPACE}/docker_inside/files/etc"
-	echo "CUSTOM_IP=${ROUTER_IP}" >> ${GIT_WORKSPACE}/docker_inside/files/etc/custom_vars.txt
     docker run --rm -i -u root\
 	-e PROFILE=$PROFILE \
 	-e ROOTFS_PARTSIZE=$ROOTFS_PARTSIZE\
