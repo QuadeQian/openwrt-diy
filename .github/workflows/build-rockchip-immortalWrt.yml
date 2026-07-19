@@ -1,8 +1,6 @@
 name: build-rockchip-immortalWrt
 
 on:
-  schedule:
-    - cron: '0 3 23 * *'  # 每月23日UTC时间3:00
   workflow_dispatch:
     inputs:
       version:
@@ -11,6 +9,7 @@ on:
           输入 OWRT版本 可选值如下：
         options:
           - '24.10'
+          - '25.12'
         required: true
         default: '24.10'
       profile:
