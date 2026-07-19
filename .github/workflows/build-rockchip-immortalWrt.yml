@@ -9,7 +9,8 @@ on:
           输入 OWRT版本 可选值如下：
         options:
           - '24.10'
-          - '25.12'
+          - '25.12.0'
+          - '25.12.1'
         required: true
         default: '24.10'
       profile:
