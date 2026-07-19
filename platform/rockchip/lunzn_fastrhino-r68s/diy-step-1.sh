@@ -31,8 +31,8 @@ function git_sparse_clone() {
 # CUSTOM_PACKAGES="$CUSTOM_PACKAGES app-store-ui luci-app-store luci-i18n-store-zh-cn"
 
 # 测速插件
-git_sparse_clone master https://github.com/sirpdboy/luci-app-netspeedtest homebox netspeedtest luci-app-netspeedtest
-CUSTOM_PACKAGES="$CUSTOM_PACKAGES homebox netspeedtest luci-app-netspeedtest luci-i18n-netspeedtest-zh-cn"
+# git_sparse_clone master https://github.com/sirpdboy/luci-app-netspeedtest homebox netspeedtest luci-app-netspeedtest
+# CUSTOM_PACKAGES="$CUSTOM_PACKAGES homebox netspeedtest luci-app-netspeedtest luci-i18n-netspeedtest-zh-cn"
 
 # easytier
 git_sparse_clone main https://github.com/EasyTier/luci-app-easytier easytier luci-app-easytier
