@@ -75,6 +75,7 @@ build_image() {
     docker run --rm -i -u root\
 	-e PROFILE=$PROFILE \
 	-e ROOTFS_PARTSIZE=$ROOTFS_PARTSIZE\
+	-e IMAGEBUILDER_TAG=${TARGET_PLATFORM}-${TARGET_ARCH}-openwrt-${OWRT_VERSION} \
 	-v "${GIT_WORKSPACE}/cache/bin:/home/build/immortalwrt/bin" \
 	-v "${GIT_WORKSPACE}/docker_inside/shell:/home/build/immortalwrt/shell" \
 	-v "${GIT_WORKSPACE}/cache/extra-packages:/home/build/immortalwrt/packages" \
