@@ -11,7 +11,7 @@ PACKAGES="$PACKAGES luci-i18n-firewall-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-ttyd-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-mwan3-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-sqm-zh-cn"
-PACKAGES="$PACKAGES luci-i18n-adguardhome-zh-cn"
+PACKAGES="$PACKAGES luci-app-adguardhome"
 PACKAGES="$PACKAGES luci-i18n-advanced-reboot-zh-cn"
 
 mkdir -p /home/build/immortalwrt/packages/
