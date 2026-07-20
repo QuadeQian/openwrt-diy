@@ -1,88 +1,87 @@
 #!/bin/sh
-# 99-custom.sh 就是immortalwrt固件首次启动时运行的脚本 位于固件内的/etc/uci-defaults/99-custom.sh
-# Log file for debugging
-LOGFILE="/etc/config/uci-defaults-log.txt"
-echo "Starting 99-custom.sh at $(date)" >>$LOGFILE
+# /etc/uci-defaults/99-custom.sh
+# chmod 644
 
+# ===== 日志重定向 =====
+exec >/tmp/99-custom.log 2>&1
+
+echo "=========================================="
+echo "uci-defaults: 99-custom.sh started"
+echo "Date: $(date)"
+echo "=========================================="
+
+# ===== 0. 防重复执行（独立命名，避免冲突）=====
+FLAG="/etc/config/.quade-uci-defaults"
+if [ -f "$FLAG" ]; then
+    echo "[SKIP] Already initialized, exiting."
+    exit 0
+fi
+
+# ===== 1. 定义变量（重点：LAN IP 可随意改）=====
 # 获取打包时传入的自定义配置
 source /etc/custom_vars.txt || true
 
-# 设置主机名映射，解决安卓原生 TV 无法联网的问题
-uci add dhcp domain
-uci set "dhcp.@domain[-1].name=time.android.com"
-uci set "dhcp.@domain[-1].ip=203.107.6.88"
+CUSTOM_IP="${CUSTOM_IP:-192.168.26.1}"
+TIMEZONE="CST-8"
+ZONENAME="Asia/Shanghai"
+AUTHOR="Built by Quade"
 
-# 设置子网掩码 
-uci set network.lan.netmask='255.255.255.0'
-# 设置路由器管理后台地址
-if [ -n "$CUSTOM_IP" ]; then
-    # 设置路由器的管理后台地址
-    uci set network.lan.ipaddr=$CUSTOM_IP
-    echo "custom router ip is $CUSTOM_IP" >> $LOGFILE
-fi
+echo "[INFO] Variables loaded:"
+echo "  CUSTOM_IP=$CUSTOM_IP"
 
-# 若安装了dockerd 则设置docker的防火墙规则
-# 扩大docker涵盖的子网范围 '172.16.0.0/12'
-# 方便各类docker容器的端口顺利通过防火墙 
-if command -v dockerd >/dev/null 2>&1; then
-    echo "检测到 Docker，正在配置防火墙规则..."
-    FW_FILE="/etc/config/firewall"
-
-    # 删除所有名为 docker 的 zone
-    uci delete firewall.docker
-
-    # 先获取所有 forwarding 索引，倒序排列删除
-    for idx in $(uci show firewall | grep "=forwarding" | cut -d[ -f2 | cut -d] -f1 | sort -rn); do
-        src=$(uci get firewall.@forwarding[$idx].src 2>/dev/null)
-        dest=$(uci get firewall.@forwarding[$idx].dest 2>/dev/null)
-        echo "Checking forwarding index $idx: src=$src dest=$dest"
-        if [ "$src" = "docker" ] || [ "$dest" = "docker" ]; then
-            echo "Deleting forwarding @forwarding[$idx]"
-            uci delete firewall.@forwarding[$idx]
-        fi
-    done
-    # 提交删除
-    uci commit firewall
-    # 追加新的 zone + forwarding 配置
-    cat <<EOF >>"$FW_FILE"
-
-config zone 'docker'
-  option input 'ACCEPT'
-  option output 'ACCEPT'
-  option forward 'ACCEPT'
-  option name 'docker'
-  list subnet '172.16.0.0/12'
-
-config forwarding
-  option src 'docker'
-  option dest 'lan'
-
-config forwarding
-  option src 'docker'
-  option dest 'wan'
-
-config forwarding
-  option src 'lan'
-  option dest 'docker'
-EOF
-
+# ===== 2. 读取固件版本（运行期正确方式）=====
+if [ -f /etc/openwrt_release ]; then
+    . /etc/openwrt_release
+    echo "[INFO] DISTRIB_RELEASE=$DISTRIB_RELEASE"
+    echo "[INFO] DISTRIB_ID=$DISTRIB_ID"
 else
-    echo "未检测到 Docker，跳过防火墙配置。"
+    echo "[WARN] /etc/openwrt_release not found"
 fi
 
-#提交更改
-uci commit
-
-# 设置编译作者信息
-FILE_PATH="/etc/openwrt_release"
-NEW_DESCRIPTION="Packaged by Quade Qian"
-sed -i "s/DISTRIB_DESCRIPTION='[^']*'/DISTRIB_DESCRIPTION='$NEW_DESCRIPTION'/" "$FILE_PATH"
-
-# 若luci-app-advancedplus (进阶设置)已安装 则去除zsh的调用 防止命令行报 /usb/bin/zsh: not found的提示
-if opkg list-installed | grep -q '^luci-app-advancedplus '; then
-    sed -i '/\/usr\/bin\/zsh/d' /etc/profile
-    sed -i '/\/bin\/zsh/d' /etc/init.d/advancedplus
-    sed -i '/\/usr\/bin\/zsh/d' /etc/init.d/advancedplus
+# ===== 3. 切换 USTC 源 =====
+if [ -f /etc/apk/repositories.d/distfeeds.list ]; then
+    echo "[INFO] Switching apk repos to USTC..."
+    sed -i.bak \
+        -e 's|https://downloads.immortalwrt.org|https://mirrors.ustc.edu.cn/immortalwrt|g' \
+        -e 's|https://downloads.openwrt.org|https://mirrors.ustc.edu.cn/openwrt|g' \
+        /etc/apk/repositories.d/distfeeds.list
+elif [ -f /etc/opkg/distfeeds.conf ]; then
+    echo "[INFO] Switching opkg repos to USTC..."
+    sed -i.bak \
+        -e 's|https://downloads.immortalwrt.org|https://mirrors.ustc.edu.cn/immortalwrt|g' \
+        -e 's|https://downloads.openwrt.org|https://mirrors.ustc.edu.cn/openwrt|g' \
+        /etc/opkg/distfeeds.conf
+else
+    echo "[WARN] No repo config found"
 fi
+
+# ===== 4. 系统基础配置（逐条 uci set，支持变量）=====
+echo "[INFO] Writing system config..."
+uci -q set system.@system[0].timezone="$TIMEZONE"
+uci -q set system.@system[0].zonename="$ZONENAME"
+uci -q set system.@system[0].description="$AUTHOR"
+uci -q commit system
+
+# ===== 5. LAN IP 配置（变量注入，必须 static）=====
+echo "[INFO] Setting LAN IP to $CUSTOM_IP..."
+uci -q set network.lan.proto="static"
+uci -q set network.lan.ipaddr="$CUSTOM_IP"
+uci -q set network.lan.netmask="255.255.255.0"
+uci -q commit network
+
+# ===== 6. NTP 静态解析（Android TV 友好）=====
+echo "[INFO] Adding NTP static record..."
+uci -q add dhcp domain
+uci -q set dhcp.@domain[-1].name="time.android.com"
+uci -q set dhcp.@domain[-1].ip="203.107.6.88"
+uci -q commit dhcp
+
+# ===== 7. 完成标记 =====
+touch "$FLAG"
+echo "[INFO] Initialization complete."
+echo "=========================================="
+echo "Finished at: $(date)"
+echo "=========================================="
 
 exit 0
+
