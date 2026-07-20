@@ -49,6 +49,7 @@ URL="https://github.com/EasyTier/luci-app-easytier/releases/download/${ET_TAG}/$
 echo "[EasyTier] Downloading: $URL"
 TMP=$(mktemp -d) && cd $TMP
 curl -fL --retry 3 "$URL" -o et.zip && unzip -q et.zip
+ls -l *
 cp *.${USE_APK:+apk}${USE_APK:-ipk} /home/build/immortalwrt/packages/ 2>/dev/null && {
   # 追加到 PACKAGES
   PACKAGES="$PACKAGES luci-app-easytier luci-i18n-easytier-zh-cn easytier kmod-tun"
