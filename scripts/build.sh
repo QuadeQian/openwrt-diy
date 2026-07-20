@@ -89,7 +89,7 @@ build_image() {
 check_env_vars
 cd ${GIT_WORKSPACE}
 init_env
-build_packages
+# build_packages
 build_image
 echo "构建完成！输出镜像在: ${GIT_WORKSPACE}/docker/bin"
 
