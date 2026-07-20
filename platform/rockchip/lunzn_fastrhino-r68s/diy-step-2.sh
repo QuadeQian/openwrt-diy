@@ -14,6 +14,8 @@ PACKAGES="$PACKAGES luci-i18n-sqm-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-adguardhome-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-advanced-reboot-zh-cn"
 
+mkdir -p /home/build/immortalwrt/packages/
+
 # ===== EasyTier 自动获取（基于 IMAGEBUILDER_TAG）=====
 # 解析 tag: x86-64-openwrt-25.12 → PLATFORM=x86, ARCH=64, VERSION=25.12
 if [ -n "$IMAGEBUILDER_TAG" ]; then
@@ -49,13 +51,11 @@ URL="https://github.com/EasyTier/luci-app-easytier/releases/download/${ET_TAG}/$
 echo "[EasyTier] Downloading: $URL"
 TMP=$(mktemp -d) && cd $TMP
 curl -fL --retry 3 "$URL" -o et.zip && unzip -q et.zip
-ls -l *
 cp *.${USE_APK:+apk}${USE_APK:-ipk} /home/build/immortalwrt/packages/ 2>/dev/null && {
   # 追加到 PACKAGES
-  PACKAGES="$PACKAGES luci-app-easytier luci-i18n-easytier-zh-cn easytier kmod-tun"
+  PACKAGES="$PACKAGES luci-app-easytier luci-i18n-easytier-zh-cn easytier-noweb kmod-tun"
   echo "[EasyTier] Done. Tag=$IMAGEBUILDER_TAG Arch=$ET_ARCH APK=$USE_APK"
 }
 cd - >/dev/null && rm -rf $TMP
-
 
 echo "PACKAGES=\"$PACKAGES\"" >> ./envfile/custom-packages.env
