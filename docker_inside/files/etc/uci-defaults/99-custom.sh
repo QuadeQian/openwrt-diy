@@ -11,7 +11,7 @@ echo "Date: $(date)"
 echo "=========================================="
 
 # ===== 0. 防重复执行（独立命名，避免冲突）=====
-FLAG="/etc/config/.quade-uci-defaults"
+FLAG="/etc/config/.uci-defaults-custom-quade"
 if [ -f "$FLAG" ]; then
     echo "[SKIP] Already initialized, exiting."
     exit 0
