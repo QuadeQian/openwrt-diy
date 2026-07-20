@@ -51,11 +51,14 @@ URL="https://github.com/EasyTier/luci-app-easytier/releases/download/${ET_TAG}/$
 echo "[EasyTier] Downloading: $URL"
 TMP=$(mktemp -d) && cd $TMP
 curl -fL --retry 3 "$URL" -o et.zip && unzip -q et.zip
-cp *.${USE_APK:+apk}${USE_APK:-ipk} /home/build/immortalwrt/packages/ 2>/dev/null && {
-  # 追加到 PACKAGES
-  PACKAGES="$PACKAGES luci-app-easytier luci-i18n-easytier-zh-cn easytier-noweb kmod-tun"
-  echo "[EasyTier] Done. Tag=$IMAGEBUILDER_TAG Arch=$ET_ARCH APK=$USE_APK"
-}
+if [ "$USE_APK" -eq 1 ]; then
+    pkg_suffix="apk"
+else
+    pkg_suffix="ipk"
+fi
+cp *.${pkg_suffix} /home/build/immortalwrt/packages/ 2>/dev/null && \
+    PACKAGES="$PACKAGES luci-app-easytier luci-i18n-easytier-zh-cn easytier-noweb kmod-tun"
+echo "[EasyTier] Done. Tag=$IMAGEBUILDER_TAG Arch=$ET_ARCH APK=$USE_APK ret=$?"
 cd - >/dev/null && rm -rf $TMP
 
 echo "PACKAGES=\"$PACKAGES\"" >> ./envfile/custom-packages.env
